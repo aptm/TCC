@@ -6,14 +6,15 @@ if(length(labels)~=length(Mat))
    disp('The Labels array must be the same size of the square Matrix') 
 end
 TableStr = cell(size(Mat) + 1);
- 
-for j = 1:36
+L = length(labels);
+
+for j = 1:L
     TableStr{j,1} = labels(j);
 end 
 
-for i = 1:36
+for i = 1:L
     TableStr{1,i} = [labels(i) ' & '];
-    for j = 1:36
+    for j = 1:L
         if(Mat(j,i) == 0)
             TableStr{j+1,i+1} = '&   0   ';
         else
@@ -21,8 +22,8 @@ for i = 1:36
         end
     end
 end
-i = 36;
-for j = 1:36
+i = L;
+for j = 1:L
     TableStr{j+1,i+1} = [TableStr{j+1,i+1} ' \\'];
 end 
 

@@ -1,67 +1,69 @@
-% %% Experimentos CNN reconhecimento de gestos
-% % Autor: Ana
-% % Transfer Learning Using AlexNet
-% % MU_HandImages Dataset
-% 
-% PC = 'luc'; % 'Ana' ou 'Luc';
-% date = '23-07';
-% 
-% if(strcmp(PC,'Ana'))  
-% %   DATABASE_ROOT = 'D:\Documents\TCC\matlab\dummy\'
-%     DATABASE_ROOT = 'C:/Users/Ana Paula/Downloads/MasseyUniversity HandImages ASL Dataset/';
-%     SAVEWORKSPACE_PATH = 'D:\Documents\TCC\matlab\saveme\'
-% else
-%     DATABASE_PATH = 'E:/UFCG/ExperimentosAna/database/MasseyUniversity HandImages ASL Dataset/';
-%     SAVEWORKSPACE_PATH = 'C:\Users\Luciana\Dropbox\UFCG\ExperimentosAna\23-07\';
-% end  
-% 
-% %% Create folder to save workspace
-% mkdir(SAVEWORKSPACE_PATH)
-% 
-% %% Save command window from now on
-% diary(strcat(SAVEWORKSPACE_PATH,'DisplayWorkspace.txt'));
-% diary on
-% 
-% %% Folder Names
-% PAD_DIR    = 'padded/';
-% AUG_DIR    = 'aug/';
-% MIDDLE_DIR = 'sets/';
-% TRAIN_DIR  = 'train/';
-% VALID_DIR  = 'valid/';
-% TEST_DIR   = 'test/';
-% 
-% %% Sequence of Database dir and Functions for reading database
-% %  ordered by experiment
-% DATABASE_DIR = { PAD_DIR , ...
-%                 AUG_DIR, AUG_DIR,...
-%                 AUG_DIR, AUG_DIR, ...
-%                 AUG_DIR, AUG_DIR};
-% 
-% FcnReadExp = {  @(filename)customreader_exp1(filename),...
-%                 @(filename)customreader_exp2(filename),...
-%                 @(filename)customreader_exp3(filename),...
-%                 @(filename)customreader_exp4(filename),...
-%                 @(filename)customreader_exp5(filename),...
-%                 @(filename)customreader_exp6(filename),...
-%                 @(filename)customreader_exp7(filename)}; 
-%             
-% EXP_TITLE = {  'exp1\', ...
-%                'exp2\', ...
-%                'exp3\', ...
-%                'exp4\', ...
-%                'exp5\', ...
-%                'exp6\', ...
-%                'exp7\'};
-%            
-%  
-% if(length(EXP_TITLE) ~= length(FcnReadExp) )
-%     disp('Insira número igual de Funções de leitura e Diretórios de base de dados')
-% end
-% %%
-% NumofTrainings = length(FcnReadExp);
-% trainedNet = cell(NumofTrainings);
+%% Experimentos CNN reconhecimento de gestos
+% Autor: Ana
+% Transfer Learning Using AlexNet
+% MU_HandImages Dataset
 
-for m = 7:NumofTrainings
+PC = 'Ana'; % 'Ana' ou 'Luc';
+date = '23-07';
+
+if(strcmp(PC,'Ana'))  
+   DATABASE_ROOT = 'D:\Documents\TCC\matlab\dummy\'
+%    DATABASE_ROOT = 'C:/Users/Ana Paula/Downloads/MasseyUniversity HandImages ASL Dataset/';
+    SAVEWORKSPACE_PATH = 'D:\Documents\TCC\matlab\saveme\' 
+    labels = 'bc';
+else
+    DATABASE_PATH = 'E:/UFCG/ExperimentosAna/database/MasseyUniversity HandImages ASL Dataset/';
+    SAVEWORKSPACE_PATH = 'C:\Users\Luciana\Dropbox\UFCG\ExperimentosAna\23-07\';
+    labels = '0123456789abcdefghijklmnopqrstuvwxyz';
+end  
+
+%% Create folder to save workspace
+mkdir(SAVEWORKSPACE_PATH)
+
+%% Save command window from now on
+diary(strcat(SAVEWORKSPACE_PATH,'DisplayWorkspace.txt'));
+diary on
+
+%% Folder Names
+PAD_DIR    = 'padded/';
+AUG_DIR    = 'aug/';
+MIDDLE_DIR = 'sets/';
+TRAIN_DIR  = 'train/';
+VALID_DIR  = 'valid/';
+TEST_DIR   = 'test/';
+
+%% Sequence of Database dir and Functions for reading database
+%  ordered by experiment
+DATABASE_DIR = { PAD_DIR , ...
+                AUG_DIR, AUG_DIR,...
+                AUG_DIR, AUG_DIR, ...
+                AUG_DIR, AUG_DIR};
+
+FcnReadExp = {  @(filename)customreader_exp1(filename),...
+                @(filename)customreader_exp2(filename),...
+                @(filename)customreader_exp3(filename),...
+                @(filename)customreader_exp4(filename),...
+                @(filename)customreader_exp5(filename),...
+                @(filename)customreader_exp6(filename),...
+                @(filename)customreader_exp7(filename)}; 
+            
+EXP_TITLE = {  'exp1\', ...
+               'exp2\', ...
+               'exp3\', ...
+               'exp4\', ...
+               'exp5\', ...
+               'exp6\', ...
+               'exp7\'};
+           
+ 
+if(length(EXP_TITLE) ~= length(FcnReadExp) )
+    disp('Insira número igual de Funções de leitura e Diretórios de base de dados')
+end
+%%
+NumofTrainings = length(FcnReadExp);
+trainedNet = cell(NumofTrainings);
+
+for m = 1:NumofTrainings
     
     exp_name = EXP_TITLE{m};
     savedir = strcat(SAVEWORKSPACE_PATH,exp_name,'\');
@@ -88,11 +90,11 @@ for m = 7:NumofTrainings
     validationImages.ReadFcn = FcnReadExp{m};
     testingImages.ReadFcn    = FcnReadExp{m};
     
-    disp(['Trainned on: ' num2str(length(trainingImages.Files)) 'images'])
-    disp(['Tested on: ' num2str(length(testingImages.Files)) 'images'])
+    disp(['Trainned on: ' num2str(length(trainingImages.Files)) ' images'])
+    disp(['Tested on: ' num2str(length(testingImages.Files)) ' images'])
 
-    imwrite(readimage(trainingImages,10),strcat(savedir,exp_name(1:end-1),'.png'))
-    trainedNet{m} = TrainAlexNet(trainingImages,validationImages,testingImages, savedir ,exp_name);
+    imwrite(readimage(trainingImages,1),strcat(savedir,exp_name(1:end-1),'.png'))
+    trainedNet{m} = TrainAlexNet(trainingImages,validationImages,testingImages, savedir ,exp_name,labels);
 end
 
 
@@ -154,7 +156,7 @@ end
 diary off
 %%
 
-function netTransfer = TrainAlexNet(trainingImages,validationImages,testingImages,  savedir,exp_name)
+function netTransfer = TrainAlexNet(trainingImages,validationImages,testingImages,  savedir,exp_name, labels)
 %% Load Pretrained Network
 
 net = alexnet;
@@ -163,7 +165,7 @@ net = alexnet;
 layersTransfer = net.Layers(1:end-3);
 
 %%
-numClasses = numel(categories(trainingImages.Labels))
+numClasses = numel(categories(trainingImages.Labels));
 layers = [
     layersTransfer
     fullyConnectedLayer(numClasses,'WeightLearnRateFactor',20,'BiasLearnRateFactor',20)
@@ -205,8 +207,7 @@ save(strcat(savedir,'workspace.mat'),...
      'netTransfer','trainingImages','testingImages', ...
      'validationImages','accuracy',...
      'netTransfer','training_time','classification_time'); % all workspace
- 
-labels = '0123456789abcdefghijklmnopqrstuvwxyz';
+
 saveTable2Latex(C,labels,'confmatrixIndv.txt');
 
 MISSED_DIR = [savedir 'missedPredictions\'];
